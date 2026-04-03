@@ -9,26 +9,26 @@ export default function Header({ title, onMenuClick, userName, onLogout }: Heade
 
  return (
 
-  <header className={styles.header}>
+ <header className={styles.header}>
 
-   <div className={styles.right}>
-    <button onClick={onMenuClick}>☰</button>
-    <h1>{title}</h1>
-   </div>
+ <div className={styles.left}>
+  <button onClick={onMenuClick}>≡</button>
+  <h1>{title}</h1>
+ </div>
 
-   <div>
+ <div className={styles.right}>
 
-    {userName && <span>{userName}</span>}
+  {userName && <span style={{marginRight:"10px"}}>{userName}</span>}
 
-    {onLogout && (
-      <button onClick={onLogout}>
-        Logout
-      </button>
-    )}
+  {onLogout && (
+   <button onClick={onLogout}>
+    Logout
+   </button>
+  )}
 
-   </div>
+ </div>
 
-  </header>
+</header>
 
  )
 

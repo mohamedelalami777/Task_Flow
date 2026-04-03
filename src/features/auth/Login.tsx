@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { useAuth } from './AuthContext'
+import { useNavigate } from 'react-router-dom'
 
 export default function Login() {
 
  const { state, dispatch } = useAuth()
+ const navigate = useNavigate()
 
  const [email, setEmail] = useState('')
  const [password, setPassword] = useState('')
@@ -17,7 +19,6 @@ export default function Login() {
   try {
 
    const res = await fetch(`http://localhost:4000/users?email=${email}`)
-
    const users = await res.json()
 
    if (users.length === 0 || users[0].password !== password) {
@@ -37,6 +38,9 @@ export default function Login() {
     payload: user
    })
 
+   // redirection vers dashboard
+   navigate('/dashboard')
+
   } catch {
 
    dispatch({
@@ -45,6 +49,7 @@ export default function Login() {
    })
 
   }
+
  }
 
  return (
@@ -82,5 +87,6 @@ export default function Login() {
    </form>
 
   </div>
+
  )
 }

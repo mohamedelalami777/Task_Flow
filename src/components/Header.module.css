@@ -1,17 +1,17 @@
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  background: #fff;
-  border-bottom: 1px solid #e9ecef;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ height: 56px;
+ padding: 0 20px;
+ background: #1B8C3E;
+ color: white;
 }
 
 .left {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+ display: flex;
+ align-items: center;
+ gap: 10px;
 }
 
 .menuBtn {
@@ -44,4 +44,8 @@
   align-items: center;
   justify-content: center;
   font-weight: bold;
+}
+.right {
+ display: flex;
+ gap: 10px;
 }

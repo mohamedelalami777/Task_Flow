@@ -1,0 +1,33 @@
+.layout {
+ display: flex;
+ flex-direction: column;
+ height: 100vh;
+}
+
+.body {
+ display: flex;
+ flex: 1;
+}
+
+.content {
+ flex: 1;
+ padding: 20px;
+}
+
+.toolbar {
+ margin-bottom: 20px;
+}
+
+.addBtn {
+ background: #1B8C3E;
+ color: white;
+ border: none;
+ padding: 10px 15px;
+ border-radius: 6px;
+ cursor: pointer;
+}
+
+.loading {
+ padding: 40px;
+ font-size: 20px;
+}
