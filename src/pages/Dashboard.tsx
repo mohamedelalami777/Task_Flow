@@ -1,5 +1,8 @@
-import { useState, useEffect } from 'react'
-import { useAuth } from '../features/auth/AuthContext'
+import { useState, useEffect, useCallback } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import type { RootState } from '../store'
+import { logout } from '../features/auth/authSlice'
+import { memo } from 'react'
 import api from '../api/axios'
 
 import HeaderMUI from '../components/HeaderMUI'
@@ -23,7 +26,8 @@ interface Column {
 
 export default function Dashboard() {
 
- const { state: authState, dispatch } = useAuth()
+ const dispatch = useDispatch()
+ const { user } = useSelector((state: RootState) => state.auth)
 
  const [sidebarOpen, setSidebarOpen] = useState(true)
  const [projects, setProjects] = useState<Project[]>([])
@@ -73,25 +77,22 @@ export default function Dashboard() {
  }
 
  // PUT RENAME PROJECT
- async function renameProject(id: string, name: string) {
+ const renameProject = useCallback(async (project: Project) => {
 
-  const project = projects.find(p => p.id === id)
-
-  if (!project) return
-
-  const { data } = await api.put(`/projects/${id}`, {
-   ...project,
-   name
-  })
+  const { data } = await api.put(`/projects/${project.id}`, project)
 
   setProjects(prev =>
-   prev.map(p => (p.id === id ? data : p))
+   prev.map(p => (p.id === project.id ? data : p))
   )
 
- }
+ }, [])
+
+ const handleRename = useCallback((project: Project) => {
+  renameProject(project);
+ }, []); // référence stable
 
  // DELETE PROJECT
- async function deleteProject(id: string) {
+ const deleteProject = useCallback(async (id: string) => {
 
   if (!window.confirm("Supprimer ce projet ?")) return
 
@@ -99,13 +100,17 @@ export default function Dashboard() {
 
   setProjects(prev => prev.filter(p => p.id !== id))
 
- }
+ }, [])
+
+ const MemoizedSidebar = memo(Sidebar);
 
  if (loading) {
 
   return <div className={styles.loading}>Chargement...</div>
 
  }
+
+ const dangerousName = '<img src=x onerror=alert("HACK")>';
 
  return (
 
@@ -114,16 +119,18 @@ export default function Dashboard() {
    <HeaderMUI
     title="TaskFlow"
     onMenuClick={() => setSidebarOpen(p => !p)}
-    userName={authState.user?.name}
-    onLogout={() => dispatch({ type: 'LOGOUT' })}
+    userName={user?.name}
+    onLogout={() => dispatch(logout())}
    />
+
+   <div dangerouslySetInnerHTML={{ __html: dangerousName }} />
 
    <div className={styles.body}>
 
-    <Sidebar
+    <MemoizedSidebar
  projects={projects}
  isOpen={sidebarOpen}
- onRename={renameProject}
+ onRename={handleRename} // référence stable
  onDelete={deleteProject}
 />
 

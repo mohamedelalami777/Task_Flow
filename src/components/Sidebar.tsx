@@ -10,7 +10,7 @@ interface Project {
 interface SidebarProps {
  projects: Project[]
  isOpen: boolean
- onRename: (id: string, name: string) => void
+ onRename: (project: Project) => void
  onDelete: (id: string) => void
 }
 
@@ -20,6 +20,8 @@ export default function Sidebar({
  onRename,
  onDelete
 }: SidebarProps) {
+ console.log('Sidebar re-render');
+ console.log('Sidebar re-render');
 
  return (
 
@@ -52,7 +54,7 @@ export default function Sidebar({
        <button
         onClick={() => {
          const newName = prompt("Nouveau nom du projet", p.name)
-         if (newName) onRename(p.id, newName)
+         if (newName) onRename({ ...p, name: newName })
         }}
        >
         ✏️

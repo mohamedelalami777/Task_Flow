@@ -1,10 +1,13 @@
 import { useState } from 'react'
-import { useAuth } from './AuthContext'
+import { useSelector, useDispatch } from 'react-redux'
+import type { RootState } from '../../store'
+import { loginStart, loginSuccess, loginFailure } from './authSlice'
 import { useNavigate } from 'react-router-dom'
 
 export default function Login() {
 
- const { state, dispatch } = useAuth()
+ const dispatch = useDispatch()
+ const { loading, error } = useSelector((state: RootState) => state.auth)
  const navigate = useNavigate()
 
  const [email, setEmail] = useState('')
@@ -14,7 +17,7 @@ export default function Login() {
 
   e.preventDefault()
 
-  dispatch({ type: 'LOGIN_START' })
+  dispatch(loginStart())
 
   try {
 
@@ -23,30 +26,28 @@ export default function Login() {
 
    if (users.length === 0 || users[0].password !== password) {
 
-    dispatch({
-     type: 'LOGIN_FAILURE',
-     payload: 'Email ou mot de passe incorrect'
-    })
+    dispatch(loginFailure('Email ou mot de passe incorrect'))
 
     return
    }
 
-   const { password: _, ...user } = users[0]
+   const { password: _, ...user } = users[0] // eslint-disable-line @typescript-eslint/no-unused-vars
 
-   dispatch({
-    type: 'LOGIN_SUCCESS',
-    payload: user
-   })
+   const fakeToken = btoa(JSON.stringify({
+    userId: user.id,
+    email: user.email,
+    role: 'admin',
+    exp: Date.now() + 3600000 // expire dans 1h
+   }));
+
+   dispatch(loginSuccess({ user, token: fakeToken }))
 
    // redirection vers dashboard
    navigate('/dashboard')
 
   } catch {
 
-   dispatch({
-    type: 'LOGIN_FAILURE',
-    payload: 'Erreur serveur'
-   })
+   dispatch(loginFailure('Erreur serveur'))
 
   }
 
@@ -58,7 +59,7 @@ export default function Login() {
 
    <h1>TaskFlow Login</h1>
 
-   {state.error && <p style={{color:'red'}}>{state.error}</p>}
+   {error && <p style={{color:'red'}}>{error}</p>}
 
    <form onSubmit={handleSubmit}>
 
@@ -81,7 +82,7 @@ export default function Login() {
     <br/><br/>
 
     <button type="submit">
-     {state.loading ? "Connexion..." : "Se connecter"}
+     {loading ? "Connexion..." : "Se connecter"}
     </button>
 
    </form>
